@@ -8,28 +8,28 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/ellypaws/stencil/drawer"
 	imageprocessor "github.com/ellypaws/stencil/image-processor"
-	"strconv"
 )
 
-type rect struct {
-	startX, startY, endX, endY int
-}
+var movements []*imageprocessor.Movement
+var slider *widget.Slider
+var sliderSpeed *widget.Slider
+var labelMovementsInfo *widget.Label
 
-var movements []imageprocessor.Movement
-
-func startSketching(val string) {
+func startSketching() {
 	if len(movements) == 0 {
 		fmt.Println("Movements not loaded yet.")
 		return
 	}
 
-	n, _ := strconv.Atoi(val)
-	if n > len(movements) {
-		n = len(movements)
+	movementsAmount := int(slider.Value)
+	if movementsAmount > len(movements) {
+		movementsAmount = len(movements)
 	}
 
+	drawer.Speed = sliderSpeed.Value
+
 	fmt.Println("Starting sketching...")
-	drawer.Sketch(movements[:n])
+	drawer.Sketch(movements[:movementsAmount])
 }
 
 func loadMovements() {
@@ -40,25 +40,33 @@ func loadMovements() {
 	movements, err = imageprocessor.ProcessImage(path)
 	if err != nil {
 		fmt.Println("Error processing image: ", err)
+		return
 	}
+
+	slider = widget.NewSlider(0, float64(len(movements)))
+	slider.Value = float64(len(movements))
+
+	labelMovementsInfo.SetText(fmt.Sprintf("Loaded %d movements", len(movements)))
 }
 
 func NewApp() {
 	application := app.New()
 	window := application.NewWindow("Stencil")
+	sliderSpeed = widget.NewSlider(0.1, 10.0)
+	sliderSpeed.Value = 0.5
+	labelMovementsInfo = widget.NewLabel("")
 
-	amountEntry := widget.NewEntry()
-	amountEntry.SetText("0") // Default movement amount
+	loadMovements()
 
-	startBtn := widget.NewButton("Start Sketching", func() {
-		startSketching(amountEntry.Text)
-	})
-
-	loadMovementsBtn := widget.NewButton("Load Movements", func() {
-		loadMovements()
-	})
-
-	content := container.NewVBox(loadMovementsBtn, startBtn, amountEntry)
+	content := container.NewVBox(
+		widget.NewButton("Load Movements", loadMovements),
+		widget.NewLabel("Number of movements:"),
+		slider,
+		labelMovementsInfo,
+		widget.NewLabel("Speed:"),
+		sliderSpeed,
+		widget.NewButton("Start Sketching", startSketching),
+	)
 
 	window.SetContent(content)
 	window.Resize(fyne.NewSize(500, 500))

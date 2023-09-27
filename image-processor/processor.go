@@ -15,7 +15,7 @@ type Movement struct {
 }
 
 // ProcessImage processes the input image, identifies edges, and returns movements.
-func ProcessImage(filePath string) ([]Movement, error) {
+func ProcessImage(filePath string) ([]*Movement, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func ProcessImage(filePath string) ([]Movement, error) {
 	// Resize image for performance (optional)
 	small := resize.Resize(100, 0, img, resize.Bilinear)
 
-	movements := make([]Movement, 0)
+	movements := make([]*Movement, 0)
 	bounds := small.Bounds()
 
 	lastPixelWasBlack := false
@@ -40,12 +40,13 @@ func ProcessImage(filePath string) ([]Movement, error) {
 			col := color.GrayModel.Convert(small.At(x, y)).(color.Gray)
 			if col.Y > 128 {
 				if lastPixelWasBlack {
-					movements = append(movements, Movement{Type: "move", Point: image.Point{X: x, Y: y}})
+					movements = append(movements, &Movement{Type: "move", Point: image.Point{X: x, Y: y}})
 					lastPixelWasBlack = false
 				}
 			} else {
 				if !lastPixelWasBlack {
-					movements = append(movements, Movement{Type: "draw", Point: image.Point{X: x, Y: y}})
+
+					movements = append(movements, &Movement{Type: "draw", Point: image.Point{X: x, Y: y}})
 					lastPixelWasBlack = true
 				}
 			}
