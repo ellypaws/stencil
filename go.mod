@@ -5,6 +5,7 @@ go 1.21
 require github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 
 require (
+	fyne.io/fyne/v2 v2.4.0 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-vgo/robotgo v0.100.10 // indirect
@@ -21,5 +22,5 @@ require (
 	github.com/vcaesar/keycode v0.10.0 // indirect
 	github.com/vcaesar/tt v0.20.0 // indirect
 	golang.org/x/image v0.12.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
 )
