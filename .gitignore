@@ -80,3 +80,8 @@ fabric.properties
 /.idea
 /bin
 *.exe
+
+# Images
+*.jpg
+*.jpeg
+*.png
