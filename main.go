@@ -2,18 +2,24 @@ package main
 
 import (
 	"fmt"
-	"github.com/ellypaws/stencil/drawer"
-	imageprocessor "github.com/ellypaws/stencil/image-processor"
+	"github.com/ellypaws/stencil/gui" // <-- Add this import
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-func main() {
-	path := "path_to_image.png"
-	movements, err := imageprocessor.ProcessImage(path)
-	if err != nil {
-		fmt.Println("Error processing image:", err)
-		return
-	}
+func handleInterrupts() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
-	// Now, you'd use these movements in your drawer package.
-	drawer.Sketch(movements)
+	go func() {
+		<-c
+		fmt.Println("\nReceived Ctrl+C, exiting...")
+		os.Exit(0)
+	}()
+}
+
+func main() {
+	handleInterrupts() // Handles Ctrl + C
+	gui.NewApp()       // ---> Add this line at the bottom
 }
